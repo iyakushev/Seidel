@@ -4,28 +4,34 @@ public class Main {
         System.out.println("This program will solve matricies with Seidel method.");
 
         //matrix of values
-        /*double[][] matrix = new double[][]{
-                new double[]{-0.1, 0.2, -0.1},
-                new double[]{0.1, -0.2, -0.2},
-                new double[]{-0.2, 0.1, -0.1},
-        };*/
+        double[][] matrix = new double[][]{
+                new double[]{900,3,2,1,5,-3,5,9,7,3},
+                new double[]{-3,122,1,5,7,4,-2,3,12,-2},
+                new double[]{-6,4,840,10,11,8,7,7,10,7},
 
-        double[][] matrix=new double[][] {
-                new double[]{2,1},
-                new double[]{1,2}
+                new double[]{-4,3,15,400,9,10,4,5,17,8},
+                new double[]{-3,5,-8,3,-540,5,4,7,8,-9},
+                new double[]{-2,4,16,7,8,101,2,8,7,5},
+
+                new double[]{2,32,-4,-3,2,-8,505,16,7,9},
+                new double[]{-3,-5,4,1,3,5,2,302,5,15},
+                new double[]{-5,8,9,-8,3,4,5,6,301,3},
+
+                new double[]{-3,2,1,14,9,-2,14,7,18,503}
         };
         //Free elements
-//        double[] vec= new double[] {1.6,-2.3,1.5};
-            double[] vec=new double[] {1,-1};
+        double[] vec= new double[] {5,-3,-12,15,7,7,19,3,1,52};
         seidel(matrix, vec);
     }
 
     private static boolean done(double[] current, double[] previous, double eps) {
-        double n=0.0;
-        for (int i = 0; i < current.length; i++)
-            if(Math.abs(current[i]-previous[i])<eps)
-                n=Math.abs(current[i]-previous[i]);
-        return n>eps;
+        double n=Math.abs(previous[0]-current[0]);
+        for (int i = 1; i < current.length; i++) {
+            double new_n=Math.abs(previous[i] - current[i]);
+            if (new_n>n)
+                n = new_n;
+        }
+        return n<eps;
     }
 
     private static void print(double[] x) {
@@ -40,32 +46,24 @@ public class Main {
         double[] xp=new double[matrix.length];
         //current solution
         double[] x = new double[matrix.length];
-        double eps = Math.pow(10, -4);
+        double eps = Math.pow(10, -9);
+        //number of iterations
         int jit=0;
-        //Sum of elements
-        double inty;
 
         for (int i = 0; i < matrix.length; i++)
             x[i] = 0;
 
         do {
             for(int i=0; i<matrix.length; i++) {
-                xp=x;
-                inty=0.0;
-//                System.out.println("ITER: "+i);
-                for(int j=0; j<matrix.length; j++) {
-                    if(i>j) {
-                        inty+=matrix[i][j]*xp[j];
-                        System.out.println(inty+" inty:XP  "+xp[j]+"  matrix|  "+matrix[i][i]);
-                    }
-                    if(i<j)
-                        inty+=matrix[i][j]*x[i];
-                }
-                x[i]=-(inty-vec[i])/matrix[i][i];
-//                System.out.println("X["+i+"]  "+x[i]+"   vec: "+vec[i]+"   inty: "+inty+"  diag: "+matrix[i][i]);
+                System.arraycopy(x,0,xp,0,matrix.length);
+                x[i] = vec[i];
+                for (int j = 0; j < matrix.length; j++)
+                    if (j != i)
+                        x[i]-=matrix[i][j] * x[j];
+                x[i]/= matrix[i][i];
             }
             jit++;
-        } while(jit<5 && !done(x,xp,eps));
+        } while(!done(x,xp,eps));
         System.out.println("JIT "+jit);
         print(x);
     }
